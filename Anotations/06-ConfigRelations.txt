@@ -1,0 +1,28 @@
+﻿OnDelete
+
+-Cascade -si la principal es borrada, borra sus hijos, notodas las bd lo soportan.
+-Client Cascade   -Requiere que se cargue las entidades dependientes.
+-No Action -puede dejar inconsistente la base de datos.
+
+
+Division de tablas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

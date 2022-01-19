@@ -19,7 +19,13 @@ namespace EFCore.Migrations
                     Nombre = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
                     Biografia = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     FechaNacimiento = table.Column<DateTime>(type: "date", nullable: true),
-                    FotoURL = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    FotoURL = table.Column<string>(type: "varchar(500)", unicode: false, maxLength: 500, nullable: true),
+                    Calle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Provincia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Pais = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillingAddress_Calle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillingAddress_Provincia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    BillingAddress_Pais = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -33,7 +39,10 @@ namespace EFCore.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    Ubicacion = table.Column<Point>(type: "geography", nullable: true)
+                    Ubicacion = table.Column<Point>(type: "geography", nullable: true),
+                    Calle = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Provincia = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Pais = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,7 +56,8 @@ namespace EFCore.Migrations
                     Identificador = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Nombre = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
-                    EstaBorrado = table.Column<bool>(type: "bit", nullable: false)
+                    EstaBorrado = table.Column<bool>(type: "bit", nullable: false),
+                    FechaCreacion = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GetDate()")
                 },
                 constraints: table =>
                 {
@@ -88,12 +98,32 @@ namespace EFCore.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    FechaNacimiento = table.Column<DateTime>(type: "date", nullable: false)
+                    Nombre = table.Column<string>(type: "nvarchar(max)", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Personas", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CineDetalle",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false),
+                    Historia = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Valores = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Misiones = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodigoDeEtica = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CineDetalle", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CineDetalle_Cines_Id",
+                        column: x => x.Id,
+                        principalTable: "Cines",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -126,7 +156,8 @@ namespace EFCore.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     TipoSalaDeCine = table.Column<string>(type: "nvarchar(max)", nullable: false, defaultValue: "DosDimensiones"),
                     Precio = table.Column<decimal>(type: "decimal(9,2)", precision: 9, scale: 2, nullable: false),
-                    CineId = table.Column<int>(type: "int", nullable: false)
+                    CineId = table.Column<int>(type: "int", nullable: false),
+                    Moneda = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -136,7 +167,7 @@ namespace EFCore.Migrations
                         column: x => x.CineId,
                         principalTable: "Cines",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -187,6 +218,33 @@ namespace EFCore.Migrations
                         principalTable: "Peliculas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Mensajes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Contenido = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EmisorId = table.Column<int>(type: "int", nullable: false),
+                    ReceptorId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mensajes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Mensajes_Personas_EmisorId",
+                        column: x => x.EmisorId,
+                        principalTable: "Personas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Mensajes_Personas_ReceptorId",
+                        column: x => x.ReceptorId,
+                        principalTable: "Personas",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -264,6 +322,15 @@ namespace EFCore.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Personas",
+                columns: new[] { "Id", "Nombre" },
+                values: new object[,]
+                {
+                    { 1, "Felipe" },
+                    { 2, "Claudia" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "CinesOfertas",
                 columns: new[] { "Id", "CineId", "FechaFin", "FechaInicio", "PorcentajeDescuento" },
                 values: new object[,]
@@ -292,6 +359,17 @@ namespace EFCore.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "Mensajes",
+                columns: new[] { "Id", "Contenido", "EmisorId", "ReceptorId" },
+                values: new object[,]
+                {
+                    { 1, "Hola, Claudia!", 1, 2 },
+                    { 2, "Hola, Felipe, ¿Cómo te va?", 2, 1 },
+                    { 3, "Todo bien, ¿Y tú?", 1, 2 },
+                    { 4, "Muy bien :)", 2, 1 }
+                });
+
+            migrationBuilder.InsertData(
                 table: "PeliculasActores",
                 columns: new[] { "ActorId", "PeliculaId", "Orden", "Personaje" },
                 values: new object[,]
@@ -307,17 +385,17 @@ namespace EFCore.Migrations
 
             migrationBuilder.InsertData(
                 table: "SalasDeCines",
-                columns: new[] { "Id", "CineId", "Precio", "TipoSalaDeCine" },
+                columns: new[] { "Id", "CineId", "Moneda", "Precio", "TipoSalaDeCine" },
                 values: new object[,]
                 {
-                    { 1, 1, 220m, "DosDimensiones" },
-                    { 2, 1, 320m, "TresDimensiones" },
-                    { 3, 2, 200m, "DosDimensiones" },
-                    { 4, 2, 290m, "TresDimensiones" },
-                    { 5, 3, 250m, "DosDimensiones" },
-                    { 6, 3, 330m, "TresDimensiones" },
-                    { 7, 3, 450m, "CXC" },
-                    { 8, 4, 250m, "DosDimensiones" }
+                    { 1, 1, "", 220m, "DosDimensiones" },
+                    { 2, 1, "", 320m, "TresDimensiones" },
+                    { 3, 2, "", 200m, "DosDimensiones" },
+                    { 4, 2, "", 290m, "TresDimensiones" },
+                    { 5, 3, "", 250m, "DosDimensiones" },
+                    { 6, 3, "", 330m, "TresDimensiones" },
+                    { 7, 3, "", 450m, "CXC" },
+                    { 8, 4, "", 250m, "DosDimensiones" }
                 });
 
             migrationBuilder.InsertData(
@@ -349,7 +427,18 @@ namespace EFCore.Migrations
                 name: "IX_Generos_Nombre",
                 table: "Generos",
                 column: "Nombre",
-                unique: true);
+                unique: true,
+                filter: "EstaBorrado = 'false'");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Mensajes_EmisorId",
+                table: "Mensajes",
+                column: "EmisorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Mensajes_ReceptorId",
+                table: "Mensajes",
+                column: "ReceptorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PeliculasActores_ActorId",
@@ -370,6 +459,9 @@ namespace EFCore.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "CineDetalle");
+
+            migrationBuilder.DropTable(
                 name: "CinesOfertas");
 
             migrationBuilder.DropTable(
@@ -379,16 +471,19 @@ namespace EFCore.Migrations
                 name: "Logs");
 
             migrationBuilder.DropTable(
+                name: "Mensajes");
+
+            migrationBuilder.DropTable(
                 name: "PeliculasActores");
 
             migrationBuilder.DropTable(
                 name: "PeliculaSalaDeCine");
 
             migrationBuilder.DropTable(
-                name: "Personas");
+                name: "Generos");
 
             migrationBuilder.DropTable(
-                name: "Generos");
+                name: "Personas");
 
             migrationBuilder.DropTable(
                 name: "Actores");

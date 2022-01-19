@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace EFCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220119125229_VistaConteoPeliculas")]
-    partial class VistaConteoPeliculas
+    [Migration("20220119155610_HerenciaTableTPH")]
+    partial class HerenciaTableTPH
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -25,20 +25,7 @@ namespace EFCore.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("EFCore.Entities.SinLlaves.CineSinUbicacion", b =>
-                {
-                    b.Property<int>("Id")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Nombre")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.ToView(null);
-
-                    b.ToSqlQuery("Select Id, Nombre FROM Cines");
-                });
-
-            modelBuilder.Entity("EFCore.Model.Actor", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Actor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -53,7 +40,9 @@ namespace EFCore.Migrations
                         .HasColumnType("date");
 
                     b.Property<string>("FotoURL")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(500)
+                        .IsUnicode(false)
+                        .HasColumnType("varchar(500)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -62,7 +51,7 @@ namespace EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Actores", (string)null);
+                    b.ToTable("Actores");
 
                     b.HasData(
                         new
@@ -118,7 +107,7 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.Cine", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Cine", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -136,7 +125,7 @@ namespace EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Cines", (string)null);
+                    b.ToTable("Cines");
 
                     b.HasData(
                         new
@@ -165,7 +154,30 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.CineOferta", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.CineDetalle", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodigoDeEtica")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Historia")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Misiones")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Valores")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Cines", (string)null);
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.CineOferta", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -191,7 +203,7 @@ namespace EFCore.Migrations
                     b.HasIndex("CineId")
                         .IsUnique();
 
-                    b.ToTable("CinesOfertas", (string)null);
+                    b.ToTable("CinesOfertas");
 
                     b.HasData(
                         new
@@ -212,7 +224,7 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.Genero", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Genero", b =>
                 {
                     b.Property<int>("Identificador")
                         .ValueGeneratedOnAdd()
@@ -223,6 +235,11 @@ namespace EFCore.Migrations
                     b.Property<bool>("EstaBorrado")
                         .HasColumnType("bit");
 
+                    b.Property<DateTime>("FechaCreacion")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("GetDate()");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -231,9 +248,10 @@ namespace EFCore.Migrations
                     b.HasKey("Identificador");
 
                     b.HasIndex("Nombre")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("EstaBorrado = 'false'");
 
-                    b.ToTable("Generos", (string)null);
+                    b.ToTable("Generos");
 
                     b.HasData(
                         new
@@ -268,7 +286,7 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.Log", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Log", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -282,7 +300,88 @@ namespace EFCore.Migrations
                     b.ToTable("Logs");
                 });
 
-            modelBuilder.Entity("EFCore.Model.Pelicula", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Mensaje", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Contenido")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EmisorId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ReceptorId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmisorId");
+
+                    b.HasIndex("ReceptorId");
+
+                    b.ToTable("Mensajes");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Contenido = "Hola, Claudia!",
+                            EmisorId = 1,
+                            ReceptorId = 2
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Contenido = "Hola, Felipe, ¿Cómo te va?",
+                            EmisorId = 2,
+                            ReceptorId = 1
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Contenido = "Todo bien, ¿Y tú?",
+                            EmisorId = 1,
+                            ReceptorId = 2
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Contenido = "Muy bien :)",
+                            EmisorId = 2,
+                            ReceptorId = 1
+                        });
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.Pago", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("FechaTransaccion")
+                        .HasColumnType("date");
+
+                    b.Property<decimal>("Monto")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("TipoPago")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Pagos");
+
+                    b.HasDiscriminator<int>("TipoPago");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.Pelicula", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -308,7 +407,7 @@ namespace EFCore.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Peliculas", (string)null);
+                    b.ToTable("Peliculas");
 
                     b.HasData(
                         new
@@ -353,7 +452,7 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.PeliculaActor", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.PeliculaActor", b =>
                 {
                     b.Property<int>("PeliculaId")
                         .HasColumnType("int");
@@ -372,7 +471,7 @@ namespace EFCore.Migrations
 
                     b.HasIndex("ActorId");
 
-                    b.ToTable("PeliculasActores", (string)null);
+                    b.ToTable("PeliculasActores");
 
                     b.HasData(
                         new
@@ -426,7 +525,7 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.Persona", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Persona", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -434,18 +533,27 @@ namespace EFCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime>("FechaNacimiento")
-                        .HasColumnType("date");
-
-                    b.Property<string>("Name")
+                    b.Property<string>("Nombre")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Personas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Nombre = "Felipe"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Nombre = "Claudia"
+                        });
                 });
 
-            modelBuilder.Entity("EFCore.Model.SalaDeCine", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.SalaDeCine", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -541,6 +649,39 @@ namespace EFCore.Migrations
                             Precio = 290m,
                             TipoSalaDeCine = "TresDimensiones"
                         });
+                });
+
+            modelBuilder.Entity("EFCore.Entities.SinLlaves.CineSinUbicacion", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Nombre")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToView(null);
+
+                    b.ToSqlQuery("Select Id, Nombre FROM Cines");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.SinLlaves.PeliculaConConteos", b =>
+                {
+                    b.Property<int>("CantidadActores")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CantidadCines")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CantidadGeneros")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Titulo")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToView("PeliculasConConteos");
                 });
 
             modelBuilder.Entity("GeneroPelicula", b =>
@@ -672,24 +813,200 @@ namespace EFCore.Migrations
                         });
                 });
 
-            modelBuilder.Entity("EFCore.Model.CineOferta", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.PagoPaypal", b =>
                 {
-                    b.HasOne("EFCore.Model.Cine", null)
+                    b.HasBaseType("EFCore.Entities.Model.Pago");
+
+                    b.Property<string>("CorreoElectronico")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.HasDiscriminator().HasValue(1);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 3,
+                            FechaTransaccion = new DateTime(2022, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Monto = 157m,
+                            TipoPago = 1,
+                            CorreoElectronico = "felipe@hotmail.com"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            FechaTransaccion = new DateTime(2022, 1, 7, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Monto = 9.99m,
+                            TipoPago = 1,
+                            CorreoElectronico = "claudia@hotmail.com"
+                        });
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.PagoTarjeta", b =>
+                {
+                    b.HasBaseType("EFCore.Entities.Model.Pago");
+
+                    b.Property<string>("Ultimos4Digitos")
+                        .IsRequired()
+                        .HasColumnType("char(4)");
+
+                    b.HasDiscriminator().HasValue(2);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            FechaTransaccion = new DateTime(2022, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Monto = 500m,
+                            TipoPago = 2,
+                            Ultimos4Digitos = "0123"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            FechaTransaccion = new DateTime(2022, 1, 6, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Monto = 120m,
+                            TipoPago = 2,
+                            Ultimos4Digitos = "1234"
+                        });
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.Actor", b =>
+                {
+                    b.OwnsOne("EFCore.Entities.Model.Direccion", "BillingAddress", b1 =>
+                        {
+                            b1.Property<int>("ActorId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Calle")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Pais")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<string>("Provincia")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("ActorId");
+
+                            b1.ToTable("Actores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActorId");
+                        });
+
+                    b.OwnsOne("EFCore.Entities.Model.Direccion", "DireccionHogar", b1 =>
+                        {
+                            b1.Property<int>("ActorId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Calle")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Calle");
+
+                            b1.Property<string>("Pais")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Pais");
+
+                            b1.Property<string>("Provincia")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Provincia");
+
+                            b1.HasKey("ActorId");
+
+                            b1.ToTable("Actores");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ActorId");
+                        });
+
+                    b.Navigation("BillingAddress");
+
+                    b.Navigation("DireccionHogar");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.Cine", b =>
+                {
+                    b.OwnsOne("EFCore.Entities.Model.Direccion", "Direccion", b1 =>
+                        {
+                            b1.Property<int>("CineId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Calle")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Calle");
+
+                            b1.Property<string>("Pais")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Pais");
+
+                            b1.Property<string>("Provincia")
+                                .HasColumnType("nvarchar(max)")
+                                .HasColumnName("Provincia");
+
+                            b1.HasKey("CineId");
+
+                            b1.ToTable("Cines");
+
+                            b1.WithOwner()
+                                .HasForeignKey("CineId");
+                        });
+
+                    b.Navigation("Direccion");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.CineDetalle", b =>
+                {
+                    b.HasOne("EFCore.Entities.Model.Cine", "Cine")
+                        .WithOne("CineDetalle")
+                        .HasForeignKey("EFCore.Entities.Model.CineDetalle", "Id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Cine");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.CineOferta", b =>
+                {
+                    b.HasOne("EFCore.Entities.Model.Cine", null)
                         .WithOne("CineOferta")
-                        .HasForeignKey("EFCore.Model.CineOferta", "CineId")
+                        .HasForeignKey("EFCore.Entities.Model.CineOferta", "CineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EFCore.Model.PeliculaActor", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Mensaje", b =>
                 {
-                    b.HasOne("EFCore.Model.Actor", "Actor")
+                    b.HasOne("EFCore.Entities.Model.Persona", "Emisor")
+                        .WithMany("MensajesEnviados")
+                        .HasForeignKey("EmisorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("EFCore.Entities.Model.Persona", "Receptor")
+                        .WithMany("MensajesRecibidos")
+                        .HasForeignKey("ReceptorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Emisor");
+
+                    b.Navigation("Receptor");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.PeliculaActor", b =>
+                {
+                    b.HasOne("EFCore.Entities.Model.Actor", "Actor")
                         .WithMany("PeliculasActores")
                         .HasForeignKey("ActorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFCore.Model.Pelicula", "Pelicula")
+                    b.HasOne("EFCore.Entities.Model.Pelicula", "Pelicula")
                         .WithMany("PeliculasActores")
                         .HasForeignKey("PeliculaId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -700,12 +1017,12 @@ namespace EFCore.Migrations
                     b.Navigation("Pelicula");
                 });
 
-            modelBuilder.Entity("EFCore.Model.SalaDeCine", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.SalaDeCine", b =>
                 {
-                    b.HasOne("EFCore.Model.Cine", "Cine")
+                    b.HasOne("EFCore.Entities.Model.Cine", "Cine")
                         .WithMany("SalasDeCines")
                         .HasForeignKey("CineId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Cine");
@@ -713,13 +1030,13 @@ namespace EFCore.Migrations
 
             modelBuilder.Entity("GeneroPelicula", b =>
                 {
-                    b.HasOne("EFCore.Model.Genero", null)
+                    b.HasOne("EFCore.Entities.Model.Genero", null)
                         .WithMany()
                         .HasForeignKey("GenerosIdentificador")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFCore.Model.Pelicula", null)
+                    b.HasOne("EFCore.Entities.Model.Pelicula", null)
                         .WithMany()
                         .HasForeignKey("PeliculasId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -728,34 +1045,43 @@ namespace EFCore.Migrations
 
             modelBuilder.Entity("PeliculaSalaDeCine", b =>
                 {
-                    b.HasOne("EFCore.Model.Pelicula", null)
+                    b.HasOne("EFCore.Entities.Model.Pelicula", null)
                         .WithMany()
                         .HasForeignKey("PeliculasId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("EFCore.Model.SalaDeCine", null)
+                    b.HasOne("EFCore.Entities.Model.SalaDeCine", null)
                         .WithMany()
                         .HasForeignKey("SalasDeCineId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("EFCore.Model.Actor", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Actor", b =>
                 {
                     b.Navigation("PeliculasActores");
                 });
 
-            modelBuilder.Entity("EFCore.Model.Cine", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Cine", b =>
                 {
+                    b.Navigation("CineDetalle");
+
                     b.Navigation("CineOferta");
 
                     b.Navigation("SalasDeCines");
                 });
 
-            modelBuilder.Entity("EFCore.Model.Pelicula", b =>
+            modelBuilder.Entity("EFCore.Entities.Model.Pelicula", b =>
                 {
                     b.Navigation("PeliculasActores");
+                });
+
+            modelBuilder.Entity("EFCore.Entities.Model.Persona", b =>
+                {
+                    b.Navigation("MensajesEnviados");
+
+                    b.Navigation("MensajesRecibidos");
                 });
 #pragma warning restore 612, 618
         }

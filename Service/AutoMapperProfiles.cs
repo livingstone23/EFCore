@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using EFCore.Entities.DTOs;
-using EFCore.Model;
+using EFCore.Entities.Model;
 using EFCorePeliculas.DTOs;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;

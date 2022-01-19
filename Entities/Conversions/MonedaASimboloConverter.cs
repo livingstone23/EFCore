@@ -1,4 +1,4 @@
-﻿using EFCore.Model;
+﻿using EFCore.Entities.Model;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EFCore.Entities.Conversions

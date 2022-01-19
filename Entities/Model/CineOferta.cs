@@ -1,4 +1,4 @@
-﻿namespace EFCore.Model
+﻿namespace EFCore.Entities.Model
 {
     public class CineOferta
     {
@@ -6,6 +6,7 @@
         public DateTime FechaInicio { get; set; }
         public DateTime FechaFin { get; set; }
         public decimal PorcentajeDescuento { get; set; }
+
         public int CineId { get; set; }
     }
 }

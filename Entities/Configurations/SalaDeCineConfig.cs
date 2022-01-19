@@ -1,5 +1,5 @@
 ﻿using EFCore.Entities.Conversions;
-using EFCore.Model;
+using EFCore.Entities.Model;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

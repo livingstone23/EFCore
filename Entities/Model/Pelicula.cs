@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     public class Pelicula
     {

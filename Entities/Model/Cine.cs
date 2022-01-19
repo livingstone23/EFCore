@@ -1,8 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Geometries;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using NetTopologySuite.Geometries;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     public class Cine
     {
@@ -16,5 +14,10 @@ namespace EFCore.Model
         //Mas rapido que ICollection pero desventaja es que no ordena
         //[ForeignKey("CineId")]
         public HashSet<SalaDeCine> SalasDeCines { get; set; }
+
+        //Propiedad de navegacion utilizada 
+        //para la division de tabla.
+        public CineDetalle CineDetalle { get; set; }
+        public Direccion Direccion { get; set; }
     }
 }

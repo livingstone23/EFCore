@@ -3,7 +3,7 @@ using AutoMapper.QueryableExtensions;
 using EFCore.Data;
 using EFCore.Entities.DTOs;
 using EFCore.Entities.SinLlaves;
-using EFCore.Model;
+using EFCore.Entities.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

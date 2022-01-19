@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     public class Actor
     {
@@ -52,7 +52,9 @@ namespace EFCore.Model
 
             }
         }
-        
-        public Direccion Direccion { get; set; }
+
+        //Propiedad para aplicar entidad de propiedad.
+        public Direccion DireccionHogar { get; set; }
+        public Direccion BillingAddress { get; set; }
     }
 }

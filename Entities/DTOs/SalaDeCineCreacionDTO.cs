@@ -1,5 +1,5 @@
 ﻿using EFCore.Entities.DTOs;
-using EFCore.Model;
+using EFCore.Entities.Model;
 
 namespace EFCorePeliculas.DTOs
 {

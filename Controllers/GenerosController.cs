@@ -1,5 +1,5 @@
 ﻿using EFCore.Data;
-using EFCore.Model;
+using EFCore.Entities.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

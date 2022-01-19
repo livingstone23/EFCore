@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     public class SalaDeCine
     {
@@ -13,6 +13,8 @@ namespace EFCore.Model
 
         
         public int CineId { get; set; }
+
+        [ForeignKey(nameof(CineId))]
         public Cine Cine { get; set; }
 
         public HashSet<Pelicula> Peliculas { get; set; }

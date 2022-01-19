@@ -2,7 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using EFCore.Data;
 using EFCore.Entities.DTOs;
-using EFCore.Model;
+using EFCore.Entities.Model;
 using EFCorePeliculas.DTOs;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

@@ -1,4 +1,5 @@
-﻿using EFCore.Model;
+﻿using EFCore.Entities.Model;
+
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
 using NetTopologySuite.Geometries;

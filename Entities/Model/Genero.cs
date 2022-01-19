@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     //[Table("Generos", Schema="Peliculas")]
     [Index(nameof(Nombre), IsUnique = true)]

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace EFCore.Model
+namespace EFCore.Entities.Model
 {
     public class Log
     {
