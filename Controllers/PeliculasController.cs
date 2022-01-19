@@ -2,6 +2,8 @@
 using AutoMapper.QueryableExtensions;
 using EFCore.Data;
 using EFCore.Entities.DTOs;
+using EFCore.Entities.SinLlaves;
+using EFCore.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +23,18 @@ namespace EFCore.Controllers
         {
             this.context = context;
             this.mapper = mapper;
+        }
+
+
+
+        /// <summary>
+        /// Llamado a metodo que consume una vista.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("PeliculasConConteos")]
+        public async Task<ActionResult<IEnumerable<PeliculaConConteos>>> GetPeliculasConConteos()
+        {
+            return await context.Set<PeliculaConConteos>().ToListAsync();
         }
 
 
@@ -142,12 +156,19 @@ namespace EFCore.Controllers
         /// Metodo Lazyloading
         /// Si la data no ha sido cargada, busca esta en la base de datos, si esta ya se encuentra en memoria solo la sustrae.
         /// mas ineficiente que el cargador selectivo.
+        /// muy poco utilizado (Preferible explicito, selectivo o eager loading, ultimo mejor)
         /// </summary>
         /// <returns></returns>
         [HttpGet("lazyloading/{id:int}")]
         public async Task<ActionResult<List<PeliculaDTO>>> GetLazyLoading()
         {
             var peliculas = await context.Peliculas.AsTracking().ToListAsync();
+
+            if (peliculas is null)
+            {
+                return NotFound();
+            }
+
 
             foreach (var pelicula in peliculas)
             {
@@ -161,68 +182,104 @@ namespace EFCore.Controllers
             return peliculasDTOs;
         }
 
-        //[HttpGet("agrupadasPorEstreno")]
-        //public async Task<ActionResult> GetAgrupadasPorCartelera()
-        //{
-        //    var peliculasAgrupadas = await context.Peliculas.GroupBy(p => p.EnCartelera)
-        //                                .Select(g => new
-        //                                {
-        //                                    EnCartelera = g.Key,
-        //                                    Conteo = g.Count(),
-        //                                    Peliculas = g.ToList()
-        //                                }).ToListAsync();
 
-        //    return Ok(peliculasAgrupadas);
-        //}
+        [HttpGet("agrupadasPorEstreno")]
+        public async Task<ActionResult> GetAgrupadasPorCartelera()
+        {
+            var peliculasAgrupadas = await context.Peliculas.GroupBy(p => p.EnCartelera)
+                                        .Select(g => new
+                                        {
+                                            EnCartelera = g.Key,
+                                            Conteo = g.Count(),
+                                            Peliculas = g.ToList()
+                                        }).ToListAsync();
 
-        //[HttpGet("agrupadasPorCantidadDeGeneros")]
-        //public async Task<ActionResult> GetAgrupadasPorCantidadDeGeneros()
-        //{
-        //    var peliculasAgrupadas = await context.Peliculas.GroupBy(p => p.Generos.Count())
-        //                            .Select(g => new
-        //                            {
-        //                                Conteo = g.Key,
-        //                                Titulos = g.Select(x => x.Titulo),
-        //                                Generos = g.Select(p => p.Generos)
-        //                                        .SelectMany(gen => gen).Select(gen => gen.Nombre).Distinct()
-        //                            }).ToListAsync();
+            return Ok(peliculasAgrupadas);
+        }
 
-        //    return Ok(peliculasAgrupadas);
-        //}
 
-        //[HttpGet("filtrar")]
-        //public async Task<ActionResult<List<PeliculaDTO>>> Filtrar(
-        //        [FromQuery] PeliculasFiltroDTO peliculasFiltroDTO)
-        //{
-        //    var peliculasQueryable = context.Peliculas.AsQueryable();
+        [HttpGet("agrupadasPorCantidadDeGeneros")]
+        public async Task<ActionResult> GetAgrupadasPorCantidadDeGeneros()
+        {
+            var peliculasAgrupadas = await context.Peliculas.GroupBy(p => p.Generos.Count())
+                                    .Select(g => new
+                                    {
+                                        Conteo = g.Key,
+                                        Titulos = g.Select(x => x.Titulo),
+                                        Generos = g.Select(p => p.Generos)
+                                                .SelectMany(gen => gen).Select(gen => gen.Nombre).Distinct()
+                                    }).ToListAsync();
 
-        //    if (!string.IsNullOrEmpty(peliculasFiltroDTO.Titulo))
-        //    {
-        //        peliculasQueryable = peliculasQueryable.Where(p => p.Titulo.Contains(peliculasFiltroDTO.Titulo));
-        //    }
+            return Ok(peliculasAgrupadas);
+        }
 
-        //    if (peliculasFiltroDTO.EnCartelera)
-        //    {
-        //        peliculasQueryable = peliculasQueryable.Where(p => p.EnCartelera);
-        //    }
 
-        //    if (peliculasFiltroDTO.ProximosEstrenos)
-        //    {
-        //        var hoy = DateTime.Today;
-        //        peliculasQueryable = peliculasQueryable.Where(p => p.FechaEstreno > hoy);
-        //    }
+        /// <summary>
+        /// Filtrado con ejecucion Diferida
+        /// </summary>
+        /// <param name="peliculasFiltroDTO"></param>
+        /// <returns></returns>
+        [HttpGet("filtrar")]
+        public async Task<ActionResult<List<PeliculaDTO>>> Filtrar([FromQuery] PeliculasFiltroDTO peliculasFiltroDTO)
+        {
+            var peliculasQueryable = context.Peliculas.AsQueryable();
 
-        //    if (peliculasFiltroDTO.GeneroId != 0)
-        //    {
-        //        peliculasQueryable = peliculasQueryable.Where(p =>
-        //            p.Generos.Select(g => g.Identificador)
-        //                    .Contains(peliculasFiltroDTO.GeneroId));
-        //    }
+            if (!string.IsNullOrEmpty(peliculasFiltroDTO.Titulo))
+            {
+                peliculasQueryable = peliculasQueryable.Where(p => p.Titulo.Contains(peliculasFiltroDTO.Titulo));
+            }
 
-        //    var peliculas = await peliculasQueryable.Include(p => p.Generos).ToListAsync();
+            if (peliculasFiltroDTO.EnCartelera)
+            {
+                peliculasQueryable = peliculasQueryable.Where(p => p.EnCartelera);
+            }
 
-        //    return mapper.Map<List<PeliculaDTO>>(peliculas);
-        //}
+            if (peliculasFiltroDTO.ProximosEstrenos)
+            {
+                var hoy = DateTime.Today;
+                peliculasQueryable = peliculasQueryable.Where(p => p.FechaEstreno > hoy);
+            }
+
+            if (peliculasFiltroDTO.GeneroId != 0)
+            {
+                peliculasQueryable = peliculasQueryable.Where(p =>
+                    p.Generos.Select(g => g.Identificador)
+                            .Contains(peliculasFiltroDTO.GeneroId));
+            }
+
+            var peliculas = await peliculasQueryable.Include(p => p.Generos).ToListAsync();
+
+            return mapper.Map<List<PeliculaDTO>>(peliculas);
+        }
+
+
+
+        /// <summary>
+        /// Insertando registros con relacion existente.
+        /// </summary>
+        /// <param name="peliculaCreacionDTO"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> Post(PeliculaCreacionDTO peliculaCreacionDTO)
+        {
+            var pelicula = mapper.Map<Pelicula>(peliculaCreacionDTO);
+            pelicula.Generos.ForEach(g => context.Entry(g).State = EntityState.Unchanged);
+            pelicula.SalasDeCine.ForEach(s => context.Entry(s).State = EntityState.Unchanged);
+
+            if (pelicula.PeliculasActores is not null)
+            {
+                for (int i = 0; i < pelicula.PeliculasActores.Count; i++)
+                {
+                    pelicula.PeliculasActores[i].Orden = i + 1;
+                }
+            }
+
+            context.Add(pelicula);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
 
     }
 }

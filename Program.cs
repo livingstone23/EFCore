@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(opciones =>
     //Para comportamiento por defecto con AsNoTracking por defecto.
     opciones.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 
+    //Con esta seccion se habilita el lazyloading + la palabra "virtual" en la propiedades de navegacion de las entidades
     //opciones.UseLazyLoadingProxies();
 });
 

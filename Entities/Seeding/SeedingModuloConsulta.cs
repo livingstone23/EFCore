@@ -42,14 +42,14 @@ namespace EFCore.Entities.Seeding
                 Id = 1,
                 CineId = agora.Id,
                 Precio = 220,
-                TipoSalaDeCine = (int)TipoSalaDeCine.DosDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.DosDimensiones
             };
             var salaDeCine3DAgora = new SalaDeCine()
             {
                 Id = 2,
                 CineId = agora.Id,
                 Precio = 320,
-                TipoSalaDeCine = (int)TipoSalaDeCine.TresDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.TresDimensiones
             };
 
             var salaDeCine2DSambil = new SalaDeCine()
@@ -57,14 +57,14 @@ namespace EFCore.Entities.Seeding
                 Id = 3,
                 CineId = sambil.Id,
                 Precio = 200,
-                TipoSalaDeCine = (int)TipoSalaDeCine.DosDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.DosDimensiones
             };
             var salaDeCine3DSambil = new SalaDeCine()
             {
                 Id = 4,
                 CineId = sambil.Id,
                 Precio = 290,
-                TipoSalaDeCine = (int)TipoSalaDeCine.TresDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.TresDimensiones
             };
 
 
@@ -73,21 +73,21 @@ namespace EFCore.Entities.Seeding
                 Id = 5,
                 CineId = megacentro.Id,
                 Precio = 250,
-                TipoSalaDeCine = (int)TipoSalaDeCine.DosDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.DosDimensiones
             };
             var salaDeCine3DMegacentro = new SalaDeCine()
             {
                 Id = 6,
                 CineId = megacentro.Id,
                 Precio = 330,
-                TipoSalaDeCine = (int)TipoSalaDeCine.TresDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.TresDimensiones
             };
             var salaDeCineCXCMegacentro = new SalaDeCine()
             {
                 Id = 7,
                 CineId = megacentro.Id,
                 Precio = 450,
-                TipoSalaDeCine = (int)TipoSalaDeCine.CXC
+                TipoSalaDeCine = TipoSalaDeCine.CXC
             };
 
             var salaDeCine2DAcropolis = new SalaDeCine()
@@ -95,7 +95,7 @@ namespace EFCore.Entities.Seeding
                 Id = 8,
                 CineId = acropolis.Id,
                 Precio = 250,
-                TipoSalaDeCine = (int)TipoSalaDeCine.DosDimensiones
+                TipoSalaDeCine = TipoSalaDeCine.DosDimensiones
             };
 
             var acropolisCineOferta = new CineOferta { Id = 2, CineId = acropolis.Id, FechaInicio = DateTime.Today, FechaFin = DateTime.Today.AddDays(5), PorcentajeDescuento = 15 };

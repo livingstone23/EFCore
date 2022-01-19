@@ -2,6 +2,8 @@
 using AutoMapper.QueryableExtensions;
 using EFCore.Data;
 using EFCore.Entities.DTOs;
+using EFCore.Entities.SinLlaves;
+using EFCore.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite;
@@ -22,6 +24,19 @@ namespace EFCore.Controllers
             this.context = context;
             this.mapper = mapper;
         }
+
+
+        [HttpGet("SinUbicacion")]
+        public async Task<IEnumerable<CineSinUbicacion>> GetCinesSinUbicacion()
+        {
+            //Permite crear en tiempo real un dbcontext
+            //return await context.Set<CineSinUbicacion>().ToListAsync();
+
+            //Llamado atravez de un dataset
+            return await context.CinesSinUbicaciones.ToListAsync();
+
+        }
+
 
         //Utilizando AutoMapper para mapeo de campos especiales.
         [HttpGet]
@@ -58,6 +73,109 @@ namespace EFCore.Controllers
 
             return Ok(cines);
         }
+
+
+
+
+        /// <summary>
+        /// Insertando registros con Data relacionada.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ActionResult> Post()
+        {
+            var geometryFactory = NtsGeometryServices.Instance.CreateGeometryFactory(srid: 4326);
+            var ubicacionCine = geometryFactory.CreatePoint(new Coordinate(-69.896979, 18.476276));
+
+            var cine = new Cine()
+            {
+                Nombre = "Mi cine",
+                Ubicacion = ubicacionCine,
+                CineOferta = new CineOferta()
+                {
+                    PorcentajeDescuento = 5,
+                    FechaInicio = DateTime.Today,
+                    FechaFin = DateTime.Today.AddDays(7)
+                },
+                SalasDeCines = new HashSet<SalaDeCine>()
+                {
+                    new SalaDeCine()
+                    {
+                        Precio = 200,
+                        TipoSalaDeCine = TipoSalaDeCine.DosDimensiones
+                    },
+                    new SalaDeCine()
+                    {
+                        Precio = 350,
+                        TipoSalaDeCine = TipoSalaDeCine.TresDimensiones
+                    }
+                }
+            };
+
+            context.Add(cine);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        /// <summary>
+        /// Insertando registro usando DTO.
+        /// </summary>
+        /// <param name="cineCreacionDTO"></param>
+        /// <returns></returns>
+        [HttpPost("conDTO")]
+        public async Task<ActionResult> Post(CineCreacionDTO cineCreacionDTO)
+        {
+            var cine = mapper.Map<Cine>(cineCreacionDTO);
+            context.Add(cine);
+            await context.SaveChangesAsync();
+            return Ok();
+        }
+
+
+        //[HttpGet("{id:int}")]
+        //public async Task<ActionResult> Get(int id)
+        //{
+        //    var cineDB = await context.Cines.AsTracking()
+        //                   .Include(c => c.SalasDeCine)
+        //                   .Include(c => c.CineOferta)
+        //                   .FirstOrDefaultAsync(c => c.Id == id);
+
+        //    if (cineDB is null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    cineDB.Ubicacion = null;
+        //    return Ok(cineDB);
+        //}
+
+        //[HttpPut("{id:int}")]
+        //public async Task<ActionResult> Put(CineCreacionDTO cineCreacionDTO, int id)
+        //{
+        //    var cineDB = await context.Cines.AsTracking()
+        //                    .Include(c => c.SalasDeCine)
+        //                    .Include(c => c.CineOferta)
+        //                    .FirstOrDefaultAsync(c => c.Id == id);
+
+        //    if (cineDB is null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    cineDB = mapper.Map(cineCreacionDTO, cineDB);
+        //    await context.SaveChangesAsync();
+        //    return Ok();
+        //}
+
+        //[HttpPut("cineOferta")]
+        //public async Task<ActionResult> PutCineOferta(CineOferta cineOferta)
+        //{
+        //    context.Update(cineOferta);
+        //    await context.SaveChangesAsync();
+        //    return Ok();
+        //}
+
 
     }
 }

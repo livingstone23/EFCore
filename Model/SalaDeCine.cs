@@ -6,7 +6,9 @@ namespace EFCore.Model
     public class SalaDeCine
     {
         public int Id { get; set; }
-        public int TipoSalaDeCine { get; set; }
+
+        //ESTABLECE VALORES EN BASE A ENUMERACION, VER CONFIGURACION SalaDeCineConfig
+        public TipoSalaDeCine TipoSalaDeCine { get; set; }
         public decimal Precio { get; set; }
 
         
@@ -14,5 +16,9 @@ namespace EFCore.Model
         public Cine Cine { get; set; }
 
         public HashSet<Pelicula> Peliculas { get; set; }
+
+        public Moneda Moneda { get; set; }
+
     }
 }
+

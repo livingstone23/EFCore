@@ -13,8 +13,8 @@ using NetTopologySuite.Geometries;
 namespace EFCore.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220117143055_SeedMethod")]
-    partial class SeedMethod
+    [Migration("20220119100247_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -38,6 +38,9 @@ namespace EFCore.Migrations
 
                     b.Property<DateTime?>("FechaNacimiento")
                         .HasColumnType("date");
+
+                    b.Property<string>("FotoURL")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Nombre")
                         .IsRequired()
@@ -182,16 +185,16 @@ namespace EFCore.Migrations
                         {
                             Id = 2,
                             CineId = 4,
-                            FechaFin = new DateTime(2022, 1, 22, 0, 0, 0, 0, DateTimeKind.Local),
-                            FechaInicio = new DateTime(2022, 1, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaFin = new DateTime(2022, 1, 24, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaInicio = new DateTime(2022, 1, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             PorcentajeDescuento = 15m
                         },
                         new
                         {
                             Id = 1,
                             CineId = 1,
-                            FechaFin = new DateTime(2022, 1, 24, 0, 0, 0, 0, DateTimeKind.Local),
-                            FechaInicio = new DateTime(2022, 1, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaFin = new DateTime(2022, 1, 26, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaInicio = new DateTime(2022, 1, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             PorcentajeDescuento = 10m
                         });
                 });
@@ -204,6 +207,9 @@ namespace EFCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Identificador"), 1L, 1);
 
+                    b.Property<bool>("EstaBorrado")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Nombre")
                         .IsRequired()
                         .HasMaxLength(150)
@@ -211,34 +217,56 @@ namespace EFCore.Migrations
 
                     b.HasKey("Identificador");
 
+                    b.HasIndex("Nombre")
+                        .IsUnique();
+
                     b.ToTable("Generos", (string)null);
 
                     b.HasData(
                         new
                         {
                             Identificador = 1,
+                            EstaBorrado = false,
                             Nombre = "Acción"
                         },
                         new
                         {
                             Identificador = 2,
+                            EstaBorrado = false,
                             Nombre = "Animación"
                         },
                         new
                         {
                             Identificador = 3,
+                            EstaBorrado = false,
                             Nombre = "Comedia"
                         },
                         new
                         {
                             Identificador = 4,
+                            EstaBorrado = false,
                             Nombre = "Ciencia ficción"
                         },
                         new
                         {
                             Identificador = 5,
+                            EstaBorrado = false,
                             Nombre = "Drama"
                         });
+                });
+
+            modelBuilder.Entity("EFCore.Model.Log", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Mensaje")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Logs");
                 });
 
             modelBuilder.Entity("EFCore.Model.Pelicula", b =>
@@ -306,7 +334,7 @@ namespace EFCore.Migrations
                         {
                             Id = 5,
                             EnCartelera = true,
-                            FechaEstreno = new DateTime(2022, 1, 17, 0, 0, 0, 0, DateTimeKind.Local),
+                            FechaEstreno = new DateTime(2022, 1, 19, 0, 0, 0, 0, DateTimeKind.Local),
                             PosterURL = "https://upload.wikimedia.org/wikipedia/en/5/50/The_Matrix_Resurrections.jpg",
                             Titulo = "The Matrix Resurrections"
                         });
@@ -419,16 +447,17 @@ namespace EFCore.Migrations
                         .HasPrecision(9, 2)
                         .HasColumnType("decimal(9,2)");
 
-                    b.Property<int>("TipoSalaDeCine")
+                    b.Property<string>("TipoSalaDeCine")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(1);
+                        .HasColumnType("nvarchar(max)")
+                        .HasDefaultValue("DosDimensiones");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CineId");
 
-                    b.ToTable("SalasDeCine", (string)null);
+                    b.ToTable("SalasDeCines");
 
                     b.HasData(
                         new
@@ -436,56 +465,56 @@ namespace EFCore.Migrations
                             Id = 5,
                             CineId = 3,
                             Precio = 250m,
-                            TipoSalaDeCine = 1
+                            TipoSalaDeCine = "DosDimensiones"
                         },
                         new
                         {
                             Id = 6,
                             CineId = 3,
                             Precio = 330m,
-                            TipoSalaDeCine = 2
+                            TipoSalaDeCine = "TresDimensiones"
                         },
                         new
                         {
                             Id = 7,
                             CineId = 3,
                             Precio = 450m,
-                            TipoSalaDeCine = 3
+                            TipoSalaDeCine = "CXC"
                         },
                         new
                         {
                             Id = 8,
                             CineId = 4,
                             Precio = 250m,
-                            TipoSalaDeCine = 1
+                            TipoSalaDeCine = "DosDimensiones"
                         },
                         new
                         {
                             Id = 1,
                             CineId = 1,
                             Precio = 220m,
-                            TipoSalaDeCine = 1
+                            TipoSalaDeCine = "DosDimensiones"
                         },
                         new
                         {
                             Id = 2,
                             CineId = 1,
                             Precio = 320m,
-                            TipoSalaDeCine = 2
+                            TipoSalaDeCine = "TresDimensiones"
                         },
                         new
                         {
                             Id = 3,
                             CineId = 2,
                             Precio = 200m,
-                            TipoSalaDeCine = 1
+                            TipoSalaDeCine = "DosDimensiones"
                         },
                         new
                         {
                             Id = 4,
                             CineId = 2,
                             Precio = 290m,
-                            TipoSalaDeCine = 2
+                            TipoSalaDeCine = "TresDimensiones"
                         });
                 });
 
@@ -501,7 +530,7 @@ namespace EFCore.Migrations
 
                     b.HasIndex("PeliculasId");
 
-                    b.ToTable("GeneroPelicula", (string)null);
+                    b.ToTable("GeneroPelicula");
 
                     b.HasData(
                         new

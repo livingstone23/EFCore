@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace EFCore.Model
 {
     //[Table("Generos", Schema="Peliculas")]
+    [Index(nameof(Nombre), IsUnique = true)]
     public class Genero
     {
         //[Key]
@@ -12,6 +14,8 @@ namespace EFCore.Model
         //[Required]
         //[Column("NombreGenero")]
         public string Nombre { get; set; }
+
+        public bool EstaBorrado { get; set; }
         public HashSet<Pelicula> Peliculas { get; set; }
     }
 }
