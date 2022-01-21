@@ -1,8 +1,10 @@
-﻿using EFCorePeliculas.Entidades;
+﻿
+using EFCore.Data;
+using EFCore.Entities.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFCorePeliculas.Controllers
+namespace EFCore.Controllers
 {
     [ApiController]
     [Route("api/pagos")]
