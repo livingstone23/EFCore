@@ -215,7 +215,7 @@ namespace EFCore.Controllers
 
 
         /// <summary>
-        /// Filtrado con ejecucion Diferida
+        /// Filtrado con ejecucion Diferida utilizando AsQueryable
         /// </summary>
         /// <param name="peliculasFiltroDTO"></param>
         /// <returns></returns>

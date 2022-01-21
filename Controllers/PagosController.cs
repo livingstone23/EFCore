@@ -23,12 +23,21 @@ namespace EFCore.Controllers
             return await context.Pagos.ToListAsync();
         }
 
+        /// <summary>
+        /// con esta funcion solo trae los pagos que tienen vinculacion con tarjeta
+        /// por la estructura de herencia
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("tarjetas")]
         public async Task<ActionResult<IEnumerable<PagoTarjeta>>> GetTarjetas()
         {
             return await context.Pagos.OfType<PagoTarjeta>().ToListAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("paypal")]
         public async Task<ActionResult<IEnumerable<PagoPaypal>>> GetPaypal()
         {
